@@ -2,8 +2,6 @@
 setlocal enabledelayedexpansion
 
 :: Define download URL and target folder
-set "ZIP_URL=https://github.com/Alchemy-AOE-Community/CHEM-Random-Map-Scripts/raw/refs/heads/Space_Maps/Space_Maps/ALS5_Maps.zip"
-set "ZIP_FILE=%TEMP%\ALS5_Maps.zip"
 set "TARGET_FOLDER=resources\_common\random-map-scripts\Current_Alchemy_League_Maps"
 set "GITHUB_URL=https://raw.githubusercontent.com/Alchemy-AOE-Community/CHEM-Competition-Map-Packs/main/ALCS.md"
 
