@@ -5,15 +5,16 @@ setlocal enabledelayedexpansion
 set "TARGET_FOLDER=resources\_common\random-map-scripts\Current_Alchemy_League_Maps"
 set "GITHUB_URL=https://raw.githubusercontent.com/Alchemy-AOE-Community/CHEM-Competition-Map-Packs/main/ALCS.md"
 
-call :findAoEPath
+call :find_aoe_path
 call :open_maps_folder
+call :delete_all_files
 call :download
 call :download_about
 call :delete_temp_files
 exit
 
 :download
-call :findAoEPath
+call :find_aoe_path
 echo Downloading and installing latest maps to: !DEST_PATH!
 
 :: Create target directory
@@ -78,7 +79,7 @@ for /f "usebackq delims=" %%L in ("%DOWNLOAD_LIST_PATH%") do (
 exit /b
 
 :open_maps_folder
-call :findAoEPath
+call :find_aoe_path
 
 :: Create target directory
 if not exist "%DEST_PATH%" mkdir "%DEST_PATH%"
@@ -89,12 +90,15 @@ echo Opening maps folder: !PARENT_PATH!
 explorer "!PARENT_PATH!"
 exit /b
 
-:findAoEPath
+:find_aoe_path
 :: Check Steam installation
+:: Steam App 813780 refers to the unique App ID assigned by Steam to Age of Empires II: Definitive Edition in the Steam store and client.
 set "REG_PATH_STEAM=HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 813780"
 for /f "tokens=2*" %%A in ('reg query "%REG_PATH_STEAM%" /v InstallLocation 2^>nul') do set "AOE2_PATH=%%B"
 
 :: Check Microsoft Store installation using PowerShell if Steam version not found
+:: Microsoft.MSPhoenix is the known internal package name for AoE2:DE from the Microsoft Store.
+:: https://www.reddit.com/r/aoe2/comments/g2ul40/aoe2de_microsoft_store_install_location/?rdt=38893
 if not defined AOE2_PATH (
     for /f "tokens=*" %%I in ('powershell -command "Get-AppxPackage -Name \"Microsoft.MSPhoenix\" | Select-Object -ExpandProperty InstallLocation"') do set "AOE2_PATH=%%I"
 )
@@ -126,3 +130,15 @@ if !errorlevel! neq 0 (
     echo Download successful: !DEST_PATH!\about.txt
 )
 exit /b
+
+:delete_all_files
+call :find_aoe_path
+if exist "!DEST_PATH!" (
+    echo Deleting all files in !DEST_PATH!...
+    del /q "!DEST_PATH!\*.*"
+    echo All files deleted.
+) else (
+    echo Target folder does not exist.
+)
+exit /b
+
